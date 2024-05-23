@@ -1,17 +1,10 @@
-import { Router } from 'express';
-import authRoute from './authRoute.js';
+import { Application } from "express";
+import tutorialRoutes from "./tutorial.routes";
+import homeRoutes from "./home.routes";
 
-const router = Router();
-
-const defaultRoutes = [
-    {
-        path: '/auth',
-        route: authRoute,
-    },
-];
-
-defaultRoutes.forEach((route) => {
-    router.use(route.path, route.route);
-});
-
-export default router;
+export default class Routes {
+  constructor(app: Application) {
+    app.use("/api", homeRoutes);
+    app.use("/api/tutorials", tutorialRoutes);
+  }
+}

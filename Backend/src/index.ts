@@ -1,23 +1,27 @@
-import http from 'http';
-import { Server } from 'socket.io';
-import { rootSocket } from '@configs/rootSocket.js';
-import { config } from '@configs/config.js';
-import { app } from './app.js';
-import { scheduleCronJobs } from './cronJobs.js';
+import express, { Application } from "express";
+import cors, { CorsOptions } from "cors";
+import Routes from "./routes";
+import Database from "./db";
 
-scheduleCronJobs();
+export default class Server {
+  constructor(app: Application) {
+    this.config(app);
+    this.syncDatabase();
+    new Routes(app);
+  }
 
-console.log('Hello Typescript Express API!!');
-// socket initialization
-const server = http.createServer(app);
-const io = new Server(server, {
-    cors: { origin: '*' },
-    path: '/api/v1/socket.io',
-});
-globalThis.io = io;
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-rootSocket(io);
+  private config(app: Application): void {
+    const corsOptions: CorsOptions = {
+      origin: "http://localhost:8081"
+    };
 
-server.listen(config.port, () => {
-    console.log(`Listening to port ${config.port}`);
-});
+    app.use(cors(corsOptions));
+    app.use(express.json());
+    app.use(express.urlencoded({ extended: true }));
+  }
+
+  private syncDatabase(): void {
+    const db = new Database();
+    db.sequelize?.sync();
+  }
+}
