@@ -1,30 +1,17 @@
 import express, { Application } from "express";
-import cors, { CorsOptions } from "cors";
-import Routes from "./routes";
-import sequelize from "./db";
+import { Server } from "./app";
 
-export default class Server {
-  constructor(app: Application) {
-    this.config(app);
-    this.syncDatabase();
-    new Routes(app);
+const app: Application = express();
+const server: Server = new Server(app);
+const PORT: number = process.env.PORT ? parseInt(process.env.PORT, 10) : 8080;
+const HOST: string = process.env.HOST || "0.0.0.0";
+
+app.listen(PORT, HOST, function () {
+  console.log(`Server is running on port ${PORT}.`);
+}).on("error", (err: any) => {
+  if (err.code === "EADDRINUSE") {
+    console.log("Error: address already in use");
+  } else {
+    console.log(err);
   }
-
-  private config(app: Application): void {
-    const corsOptions: CorsOptions = {
-      origin: "http://localhost:8080"
-    };
-
-    app.use(cors(corsOptions));
-    app.use(express.json());
-    app.use(express.urlencoded({ extended: true }));
-  }
-
-  private async syncDatabase(): Promise<void> {
-    try {
-      await sequelize.sync();
-    } catch (error) {
-      console.error("Error syncing database:", error);
-    }
-  }
-}
+});
