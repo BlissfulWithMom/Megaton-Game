@@ -16,9 +16,6 @@ class UserRoutes {
     // Retrieve all Users
     this.router.get("/", this.controller.findAll);
 
-    // Retrieve all published Users
-    this.router.get("/published", this.controller.findAllPublished);
-
     // Retrieve a single User with id
     this.router.get("/:id", this.controller.findOne);
 

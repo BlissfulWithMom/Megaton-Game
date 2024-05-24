@@ -3,7 +3,7 @@ import User from "../models/user.model";
 
 interface IUserRepository {
   save(user: User): Promise<User>;
-  retrieveAll(searchParams: {title: string, published: boolean}): Promise<User[]>;
+  retrieveAll(searchParams: { first_name?: string, last_name?: string, userName?: string, userName_verified?: number }): Promise<User[]>;
   retrieveById(userId: number): Promise<User | null>;
   update(user: User): Promise<number>;
   delete(userId: number): Promise<number>;
@@ -18,23 +18,30 @@ class UserRepository implements IUserRepository {
   async save(user: User): Promise<User> {
     try {
       return await User.create({
-        title: user.title,
-        description: user.description,
-        published: user.published
+        first_name: user.first_name,
+        last_name: user.last_name,
+        userName: user.userName,
+        userName_verified: user.userName_verified,
+        created_at: user.created_at,
+        updated_at: user.updated_at
       });
     } catch (err) {
       throw new Error("Failed to create User!");
     }
   }
 
-  async retrieveAll(searchParams: {title?: string, published?: boolean}): Promise<User[]> {
+  async retrieveAll(searchParams: { first_name?: string, last_name?: string, userName?: string, userName_verified?: number }): Promise<User[]> {
     try {
       let condition: SearchCondition = {};
 
-      if (searchParams?.published) condition.published = true;
-
-      if (searchParams?.title)
-        condition.title = { [Op.iLike]: `%${searchParams.title}%` };
+      if (searchParams?.first_name)
+        condition.first_name = { [Op.iLike]: `%${searchParams.first_name}%` };
+      if (searchParams?.last_name)
+        condition.last_name = { [Op.iLike]: `%${searchParams.last_name}%` };
+      if (searchParams?.userName)
+        condition.userName = { [Op.iLike]: `%${searchParams.userName}%` };
+      if (searchParams?.userName_verified !== undefined)
+        condition.userName_verified = searchParams.userName_verified;
 
       return await User.findAll({ where: condition });
     } catch (error) {
@@ -51,11 +58,11 @@ class UserRepository implements IUserRepository {
   }
 
   async update(user: User): Promise<number> {
-    const { id, title, description, published } = user;
+    const { id, first_name, last_name, userName, userName_verified, created_at, updated_at } = user;
 
     try {
       const affectedRows = await User.update(
-        { title, description, published },
+        { first_name, last_name, userName, userName_verified, created_at, updated_at },
         { where: { id: id } }
       );
 

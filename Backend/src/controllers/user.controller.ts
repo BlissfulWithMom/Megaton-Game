@@ -4,32 +4,28 @@ import userRepository from "../repositories/user.repository";
 
 export default class UserController {
   async create(req: Request, res: Response) {
-    if (!req.body.title) {
-      res.status(400).send({
-        message: "Content can not be empty!"
-      });
-      return;
-    }
-
     try {
       const user: User = req.body;
-      if (!user.published) user.published = false;
-
       const savedUser = await userRepository.save(user);
 
       res.status(201).send(savedUser);
     } catch (err) {
       res.status(500).send({
-        message: "Some error occurred while retrieving users."
+        message: "Some error occurred while creating user."
       });
     }
   }
 
   async findAll(req: Request, res: Response) {
-    const title = typeof req.query.title === "string" ? req.query.title : "";
+    const { first_name, last_name, userName, userName_verified } = req.query;
 
     try {
-      const users = await userRepository.retrieveAll({ title });
+      const users = await userRepository.retrieveAll({
+        first_name: typeof first_name === 'string' ? first_name : undefined,
+        last_name: typeof last_name === 'string' ? last_name : undefined,
+        userName: typeof userName === 'string' ? userName : undefined,
+        userName_verified: typeof userName_verified === 'string' ? parseInt(userName_verified) : undefined
+      });
 
       res.status(200).send(users);
     } catch (err) {
@@ -97,7 +93,7 @@ export default class UserController {
       }
     } catch (err) {
       res.status(500).send({
-        message: `Could not delete User with id==${id}.`
+        message: `Could not delete User with id=${id}.`
       });
     }
   }
@@ -110,18 +106,6 @@ export default class UserController {
     } catch (err) {
       res.status(500).send({
         message: "Some error occurred while removing all users."
-      });
-    }
-  }
-
-  async findAllPublished(req: Request, res: Response) {
-    try {
-      const users = await userRepository.retrieveAll({ published: true });
-
-      res.status(200).send(users);
-    } catch (err) {
-      res.status(500).send({
-        message: "Some error occurred while retrieving users."
       });
     }
   }

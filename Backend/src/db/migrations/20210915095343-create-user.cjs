@@ -26,9 +26,9 @@ module.exports = {
             //     type: Sequelize.STRING,
             //     allowNull: true,
             // },
-            status: {
-                type: Sequelize.INTEGER,
-            },
+            // status: {
+            //     type: Sequelize.INTEGER,
+            // },
             userName_verified: {
                 type: Sequelize.INTEGER,
             },
