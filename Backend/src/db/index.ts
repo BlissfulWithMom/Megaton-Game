@@ -1,39 +1,18 @@
-import { Sequelize } from "sequelize-typescript";
-import { config, dialect } from "../config/db.config";
-import User from "../models/user.model";
+import { Sequelize, Dialect } from 'sequelize';
+import config from '../config/db.config';
 
-class Database {
-  public sequelize: Sequelize | undefined;
-
-  constructor() {
-    this.connectToDatabase();
+const sequelize = new Sequelize({
+  username: config.development.username,
+  password: config.development.password,
+  database: config.development.database,
+  host: config.development.host,
+  dialect: config.development.dialect as Dialect,
+  pool: {
+    max: config.pool.max,
+    min: config.pool.min,
+    acquire: config.pool.acquire,
+    idle: config.pool.idle
   }
+});
 
-  private async connectToDatabase() {
-    this.sequelize = new Sequelize({
-      database: config.DB,
-      username: config.USER,
-      password: config.PASSWORD,
-      host: config.HOST,
-      dialect: dialect,
-      pool: {
-        max: config.pool.max,
-        min: config.pool.min,
-        acquire: config.pool.acquire,
-        idle: config.pool.idle
-      },
-      models: [User]
-    });
-
-    await this.sequelize
-      .authenticate()
-      .then(() => {
-        console.log("Connection has been established successfully.");
-      })
-      .catch((err) => {
-        console.error("Unable to connect to the Database:", err);
-      });
-  }
-}
-
-export default Database;
+export default sequelize;

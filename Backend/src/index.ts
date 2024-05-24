@@ -1,7 +1,7 @@
 import express, { Application } from "express";
 import cors, { CorsOptions } from "cors";
 import Routes from "./routes";
-import Database from "./db";
+import sequelize from "./db";
 
 export default class Server {
   constructor(app: Application) {
@@ -20,8 +20,11 @@ export default class Server {
     app.use(express.urlencoded({ extended: true }));
   }
 
-  private syncDatabase(): void {
-    const db = new Database();
-    db.sequelize?.sync();
+  private async syncDatabase(): Promise<void> {
+    try {
+      await sequelize.sync();
+    } catch (error) {
+      console.error("Error syncing database:", error);
+    }
   }
 }
