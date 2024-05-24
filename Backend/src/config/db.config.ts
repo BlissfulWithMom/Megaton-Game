@@ -1,8 +1,8 @@
 export const config = {
-  HOST: "localhost",
-  USER: "postgres",
-  PASSWORD: "123",
-  DB: "testdb",
+  HOST: process.env.DB_HOST,
+  USER: process.env.DB_USER,
+  PASSWORD: process.env.DB_PASS,
+  DB: process.env.DB_NAME,
   pool: {
     max: 5,
     min: 0,
