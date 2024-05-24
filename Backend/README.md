@@ -18,7 +18,7 @@ npm install
 npm run start
 ```
 
-
+### Database create/Migrate/Seed
  npx tsc src/config/db.config.ts
   cd C:\Users\John-legend\Desktop\Megaton-Game\Backend
 >> npm install --save-dev typescript
